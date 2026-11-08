@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mawar The Explorer: Chronicles of Ilm</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS (via CDN for stability without build tools) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        midnight: '#0b132b',
+                        deepteal: '#0a3641',
+                        gold: '#d4af37',
+                        parchment: '#f1e4c3',
+                        emerald: '#047857'
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        inter: ['Inter', 'sans-serif'],
+                        amiri: ['Amiri', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body class="antialiased">
+
+    <!-- 1. SPLASH SCREEN -->
+    <div id="screen-splash" class="screen active justify-center items-center">
+        <div class="text-center animate-float p-6">
+            <div class="w-24 h-24 mx-auto mb-4 bg-gold rounded-full flex items-center justify-center glow-effect">
+                <i class="fas fa-book-open text-midnight text-4xl"></i>
+            </div>
+            <h1 class="font-cinzel text-4xl md:text-5xl font-bold text-gold mb-2 text-shadow">MAWAR</h1>
+            <h2 class="font-cinzel text-xl md:text-2xl text-parchment tracking-widest mb-4">THE EXPLORER</h2>
+            <div class="h-[1px] w-32 bg-gold mx-auto mb-4"></div>
+            <p class="font-inter text-sm tracking-widest text-emerald-400 mb-10 uppercase">Jelajah Ilmu, Taklukkan Cabaran</p>
+            <button onclick="nav('menu'); MawarAudio.play('click');" class="btn-rpg px-8 py-3 rounded-full text-lg w-full max-w-xs font-bold pulse-glow">
+                Mulakan Pengembaraan
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. MAIN MENU -->
+    <div id="screen-menu" class="screen p-4 md:p-8">
+        <div class="flex justify-between items-center mb-8 pt-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full border-2 border-gold bg-deepteal flex items-center justify-center">
+                    <i class="fas fa-user-ninja text-gold text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-cinzel font-bold text-lg text-gold">Mawar</h3>
+                    <p class="text-xs text-emerald-400">Lv. <span id="ui-level">1</span> <span id="ui-title">Novice</span></p>
+                </div>
+            </div>
+            <button onclick="toggleAudio()" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-gold">
+                <i id="audio-icon" class="fas fa-volume-up"></i>
+            </button>
+        </div>
+
+        <div class="glass-panel p-4 mb-6">
+            <div class="flex justify-between text-xs mb-1">
+                <span>XP</span>
+                <span id="ui-xp-text">0 / 100</span>
+            </div>
+            <div class="w-full bg-midnight rounded-full h-3 gold-border">
+                <div id="ui-xp-bar" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-2.5 rounded-full progress-bar-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow content-start">
+            <button onclick="openMap();" class="btn-rpg p-6 rounded-xl flex flex-col items-center gap-3">
+                <i class="fas fa-map-marked-alt text-3xl mb-2 text-gold"></i>
+                <span class="font-bold">Campaign Mode</span>
+                <span class="text-xs normal-case font-inter text-gray-300">Terokai 3 Dunia Ilmu</span>
+            </button>
+            <button onclick="alert('Pilih Kategori di Peta untuk mula (Akan Datang: Mode Bebas)'); MawarAudio.play('click');" class="btn-rpg p-6 rounded-xl flex flex-col items-center gap-3">
+                <i class="fas fa-dummy text-3xl mb-2 text-gold"></i>
+                <span class="font-bold">Practice Mode</span>
+                <span class="text-xs normal-case font-inter text-gray-300">Latihan tanpa had</span>
+            </button>
+            <button onclick="startMode('survival');" class="btn-rpg p-6 rounded-xl flex flex-col items-center gap-3">
+                <i class="fas fa-heartbeat text-3xl mb-2 text-red-400"></i>
+                <span class="font-bold">Survival Mode</span>
+                <span class="text-xs normal-case font-inter text-gray-300">Nyawa Terhad</span>
+            </button>
+            <button onclick="startMode('timeattack');" class="btn-rpg p-6 rounded-xl flex flex-col items-center gap-3">
+                <i class="fas fa-hourglass-half text-3xl mb-2 text-blue-400"></i>
+                <span class="font-bold">Time Attack</span>
+                <span class="text-xs normal-case font-inter text-gray-300">60 Saat Cabaran</span>
+            </button>
+        </div>
+
+        <div class="mt-auto pt-6 flex gap-2">
+            <button onclick="nav('profile'); MawarAudio.play('click');" class="glass-panel flex-1 py-3 text-center text-sm font-cinzel text-gold rounded-lg"><i class="fas fa-medal mr-2"></i> Pencapaian</button>
+            <button onclick="nav('settings'); MawarAudio.play('click');" class="glass-panel flex-1 py-3 text-center text-sm font-cinzel text-gold rounded-lg"><i class="fas fa-cog mr-2"></i> Tetapan</button>
+        </div>
+    </div>
+
+    <!-- 3. WORLD MAP (Campaign) -->
+    <div id="screen-map" class="screen p-4">
+        <div class="flex items-center mb-6 pt-4">
+            <button onclick="nav('menu'); MawarAudio.play('click');" class="mr-4 text-gold"><i class="fas fa-arrow-left text-xl"></i></button>
+            <h2 class="font-cinzel text-xl text-gold font-bold">Peta Perjalanan</h2>
+        </div>
+        
+        <div class="relative w-full max-w-sm mx-auto h-[60vh] glass-panel p-4 flex flex-col justify-between items-center mt-4">
+            <div class="absolute w-1 h-32 bg-gold left-1/2 transform -translate-x-1/2 top-[15%] z-0"></div>
+            <div class="absolute w-1 h-32 bg-gray-600 left-1/2 transform -translate-x-1/2 top-[50%] z-0" id="line-2"></div>
+
+            <div class="z-10 flex flex-col items-center mt-4">
+                <div class="map-node locked" id="node-tajwid" onclick="startWorld('tajwid')"><i class="fas fa-moon"></i></div>
+                <h3 class="font-cinzel mt-2 text-sm text-center" id="text-tajwid">Citadel of Tajwid<br><span class="text-xs text-gray-400 font-inter">World III</span></h3>
+            </div>
+
+            <div class="z-10 flex flex-col items-center">
+                <div class="map-node locked" id="node-jurumiyyah" onclick="startWorld('jurumiyyah')"><i class="fas fa-book-reader"></i></div>
+                <h3 class="font-cinzel mt-2 text-sm text-center" id="text-jurumiyyah">Kingdom of Jurumiyyah<br><span class="text-xs text-gray-400 font-inter">World II</span></h3>
+            </div>
+
+            <div class="z-10 flex flex-col items-center mb-4">
+                <div class="map-node unlocked glow-effect" onclick="startWorld('fardhu_ain')"><i class="fas fa-kaaba"></i></div>
+                <h3 class="font-cinzel mt-2 text-sm text-gold text-center">Sanctuary of Faith<br><span class="text-xs text-gray-400 font-inter">World I</span></h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. GAMEPLAY UI -->
+    <div id="screen-game" class="screen p-4 flex flex-col">
+        <div class="flex justify-between items-center mb-4 pt-2">
+            <button onclick="confirmExit();" class="text-gray-400"><i class="fas fa-times text-xl"></i></button>
+            <div class="font-cinzel text-gold text-sm tracking-wider" id="game-mode-title">KAMPEN</div>
+            <div class="font-inter font-bold flex gap-3">
+                <span id="game-score" class="text-emerald-400 hidden"><i class="fas fa-star text-xs"></i> <span id="val-score">0</span></span>
+                <span id="game-timer" class="text-blue-400 hidden"><i class="fas fa-clock text-xs"></i> <span id="val-timer">60</span>s</span>
+                <span id="game-hp" class="text-red-400 hidden"><i class="fas fa-heart text-xs"></i> <span id="val-hp">3</span></span>
+            </div>
+        </div>
+
+        <div id="boss-ui" class="hidden mb-4 glass-panel p-3">
+            <div class="flex justify-between text-xs font-bold mb-1">
+                <span class="text-red-400">BOSS (Ketua Ilusi)</span>
+                <span class="text-emerald-400">MAWAR</span>
+            </div>
+            <div class="flex gap-2 items-center">
+                <div class="flex-1 bg-midnight h-3 rounded-full overflow-hidden border border-red-900">
+                    <div id="boss-hp-bar" class="bg-red-600 h-full w-full progress-bar-fill"></div>
+                </div>
+                <i class="fas fa-bolt text-gold"></i>
+                <div class="flex-1 bg-midnight h-3 rounded-full overflow-hidden border border-emerald-900">
+                    <div id="player-hp-bar" class="bg-emerald-600 h-full w-full progress-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-5 mb-4 flex-grow flex flex-col" id="question-container">
+            <div class="flex justify-between items-center mb-3 border-b border-gray-600 pb-2">
+                <span class="text-xs bg-deepteal px-2 py-1 rounded text-gold" id="q-category">Memuatkan...</span>
+                <span class="text-xs font-bold text-gray-300" id="q-difficulty">...</span>
+                <span class="text-xs text-gray-400" id="q-counter">0/0</span>
+            </div>
+            
+            <h3 class="text-lg md:text-xl mb-6 font-inter leading-relaxed" id="q-text">Loading question...</h3>
+            
+            <div class="mt-auto space-y-3" id="q-options">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. FEEDBACK MODAL (Overlay) -->
+    <div id="modal-feedback" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex-col items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md p-6 text-center transform scale-95 transition-transform" id="feedback-card">
+            <div id="fb-icon" class="text-5xl mb-4"></div>
+            <h2 id="fb-title" class="font-cinzel text-2xl font-bold mb-2"></h2>
+            <div id="fb-xp" class="text-emerald-400 font-bold mb-4"></div>
+            
+            <div class="bg-midnight p-4 rounded text-left border border-gray-700 mb-6">
+                <p class="text-sm text-gray-300 mb-2">Jawapan Sebenar:</p>
+                <p class="font-bold text-gold mb-3" id="fb-correct-answer"></p>
+                <p class="text-sm leading-relaxed mb-2" id="fb-explanation"></p>
+                <p class="text-xs text-gray-400 border-t border-gray-700 pt-2 mt-2"><i class="fas fa-book mr-1"></i> <span id="fb-ref"></span></p>
+            </div>
+            
+            <button onclick="nextQuestion();" class="btn-rpg w-full py-3 rounded-lg">Seterusnya</button>
+        </div>
+    </div>
+
+    <!-- 6. PROFILE & ACHIEVEMENTS -->
+    <div id="screen-profile" class="screen p-4">
+        <div class="flex items-center mb-6 pt-4">
+            <button onclick="nav('menu'); MawarAudio.play('click');" class="mr-4 text-gold"><i class="fas fa-arrow-left text-xl"></i></button>
+            <h2 class="font-cinzel text-xl text-gold font-bold">Pencapaian</h2>
+        </div>
+        <div class="glass-panel p-4 mb-4 text-center">
+            <h3 class="font-cinzel text-gold text-lg">Statistik Mawar</h3>
+            <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
+                <div class="bg-midnight p-3 rounded border border-gray-700">
+                    <div class="text-gray-400">Total Menjawab</div>
+                    <div class="text-xl font-bold text-white" id="stat-total">0</div>
+                </div>
+                <div class="bg-midnight p-3 rounded border border-gray-700">
+                    <div class="text-gray-400">Ketepatan (Accuracy)</div>
+                    <div class="text-xl font-bold text-emerald-400" id="stat-acc">0%</div>
+                </div>
+                <div class="bg-midnight p-3 rounded border border-gray-700">
+                    <div class="text-gray-400">Best Streak</div>
+                    <div class="text-xl font-bold text-amber-400" id="stat-streak">0</div>
+                </div>
+                <div class="bg-midnight p-3 rounded border border-gray-700">
+                    <div class="text-gray-400">High Score (Survival)</div>
+                    <div class="text-xl font-bold text-blue-400" id="stat-score">0</div>
+                </div>
+            </div>
+        </div>
+        <h3 class="font-cinzel text-gold text-lg mb-3 mt-6">Lencana (Badges)</h3>
+        <div class="grid grid-cols-3 gap-3" id="badges-container">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
+    <!-- 7. SETTINGS -->
+    <div id="screen-settings" class="screen p-4">
+         <div class="flex items-center mb-6 pt-4">
+            <button onclick="nav('menu'); MawarAudio.play('click');" class="mr-4 text-gold"><i class="fas fa-arrow-left text-xl"></i></button>
+            <h2 class="font-cinzel text-xl text-gold font-bold">Tetapan & Data</h2>
+        </div>
+        
+        <div class="glass-panel p-5 mb-4">
+            <h3 class="font-cinzel text-gold mb-2 border-b border-gray-600 pb-2">Status Sistem</h3>
+            <p class="text-xs text-gray-300 mb-4">Jumlah soalan dalam pangkalan data (JSON): <span id="db-count" class="font-bold text-emerald-400">Memuatkan...</span></p>
+            <p class="text-xs text-gray-400 mb-4 italic">Untuk menambah soalan, kemaskini fail <code>data/questions.json</code> dan tolak (push) ke GitHub.</p>
+            
+            <button onclick="resetData()" class="w-full bg-red-900 hover:bg-red-800 border border-red-700 text-white text-xs py-3 rounded uppercase tracking-wider font-bold transition">Padam Semua Data Progress (Reset)</button>
+        </div>
+    </div>
+
+    <!-- Scripts (Order is important) -->
+    <script src="./assets/js/audio.js"></script>
+    <script src="./assets/js/main.js"></script>
+</body>
+</html>
